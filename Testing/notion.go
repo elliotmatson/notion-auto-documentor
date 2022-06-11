@@ -8,8 +8,6 @@ import (
 	notion "github.com/dstotijn/go-notion"
 )
 
-const apiKey = "secret_L4Fbaz5krjoU9vtDcgeZ0V9Blf3N6pbIj1SewPZHDws"
-
 func main() {
 	client := notion.NewClient(apiKey)
 	//http.HandleFunc("/", handler)
