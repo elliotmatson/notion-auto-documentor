@@ -3,21 +3,23 @@ package main
 import (
 	"context"
 	"fmt"
-	"net/http"
+
+	//"net/http"
 	"os"
 
+	//"github.com/davecgh/go-spew/spew"
 	"github.com/joho/godotenv"
 
 	notion "github.com/dstotijn/go-notion"
 )
 
 func main() {
-	godotenv.Load(".env")
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Printf("Error loading environment variables: %v\n", err)
+	}
+
 	client := notion.NewClient(os.Getenv("NOTION_API_KEY"))
-	//http.HandleFunc("/", handler)
-
-	//http.ListenAndServe(":8080", nil)
-
 	results, err := client.Search(context.Background(), &notion.SearchOpts{ /*Query: "test", */ Filter: &notion.SearchFilter{Value: "database", Property: "object"}})
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
@@ -28,7 +30,7 @@ func main() {
 		case notion.Database:
 			fmt.Printf("Page: %v\n", t.Title[0].PlainText)
 			//result, _ := client.QueryDatabase(context.Background(), t.ID, &notion.DatabaseQuery{})
-			initDB(client, t.ID)
+			InitDB(client, t.ID)
 			//spew.Dump(result)
 		default:
 			fmt.Printf("wrong type %T\n", t)
@@ -37,7 +39,7 @@ func main() {
 }
 
 // sets up a notion db with the required parameters
-func initDB(c *notion.Client, db string) {
+func InitDB(c *notion.Client, db string) {
 	t := []notion.RichText{{Text: &notion.Text{Content: "test"}}}
 	p := make(notion.DatabasePageProperties)
 	p["Name"] = notion.DatabasePageProperty{Title: t}
@@ -50,7 +52,7 @@ func initDB(c *notion.Client, db string) {
 }
 
 // adds a page to a notion db
-func addPage(c *notion.Client, db string, title string) {
+func AddPage(c *notion.Client, db string, title string) {
 	t := []notion.RichText{{Text: &notion.Text{Content: title}}}
 	p := make(notion.DatabasePageProperties)
 	p["Name"] = notion.DatabasePageProperty{Title: t}
@@ -58,8 +60,4 @@ func addPage(c *notion.Client, db string, title string) {
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 	}
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, %q", r.URL.Path)
 }
