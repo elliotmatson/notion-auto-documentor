@@ -4,12 +4,16 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
+
+	"github.com/joho/godotenv"
 
 	notion "github.com/dstotijn/go-notion"
 )
 
 func main() {
-	client := notion.NewClient(apiKey)
+	godotenv.Load(".env")
+	client := notion.NewClient(os.Getenv("NOTION_API_KEY"))
 	//http.HandleFunc("/", handler)
 
 	//http.ListenAndServe(":8080", nil)
