@@ -7,7 +7,6 @@ import (
 	//"net/http"
 	"os"
 
-	//"github.com/davecgh/go-spew/spew"
 	"github.com/joho/godotenv"
 
 	notion "github.com/dstotijn/go-notion"
@@ -30,8 +29,8 @@ func main() {
 		case notion.Database:
 			fmt.Printf("Page: %v\n", t.Title[0].PlainText)
 			//result, _ := client.QueryDatabase(context.Background(), t.ID, &notion.DatabaseQuery{})
+			//spew.Dump(t)
 			InitDB(client, t.ID)
-			//spew.Dump(result)
 		default:
 			fmt.Printf("wrong type %T\n", t)
 		}
@@ -40,14 +39,14 @@ func main() {
 
 // sets up a notion db with the required parameters
 func InitDB(c *notion.Client, db string) {
-	t := []notion.RichText{{Text: &notion.Text{Content: "test"}}}
-	p := make(notion.DatabasePageProperties)
-	p["Name"] = notion.DatabasePageProperty{Title: t}
-	p["Poops"] = notion.DatabasePageProperty{Title: []notion.RichText{{Text: &notion.Text{Content: "poop poop"}}}}
 
-	_, err := c.UpdateDatabase(context.Background(), db, notion.UpdateDatabaseParams{})
+	dbParams := make(map[string]*notion.DatabaseProperty) // make map of db properties to update
+
+	dbParams["testProp2"] = &notion.DatabaseProperty{Number: &notion.NumberMetadata{Format: "dollar"}, Type: "number"}
+
+	_, err := c.UpdateDatabase(context.Background(), db, notion.UpdateDatabaseParams{Properties: dbParams})
 	if err != nil {
-		fmt.Printf("Error: %v\n", err)
+		fmt.Printf("Update db Error: %v\n", err)
 	}
 }
 
